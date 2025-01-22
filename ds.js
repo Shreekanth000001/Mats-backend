@@ -9,7 +9,7 @@ const connecToMongo = async () => {
         .then(() => {
             console.log('success');
         }).catch((err) => {
-            console.log('no success', err);y
+            console.log('no success', err);
         });
 
 
