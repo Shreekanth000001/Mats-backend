@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const courseSchema = new Schema({
+const classesSchema = new Schema({
     name: {
         type: String,
         required: true,
@@ -13,12 +13,15 @@ const courseSchema = new Schema({
     course: {
         type: String
     },
+    section:{
+        type:String
+    },
     strength: {
         type: Number
     },
     doi: { type: Date, default: Date.now },
 });
 
-const Course = mongoose.model('Course', courseSchema);
-Course.createIndexes();
-module.exports = Course;
+const Classes = mongoose.model('Classes', classesSchema);
+Classes.createIndexes();
+module.exports = Classes;

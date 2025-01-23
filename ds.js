@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 // require('.env').config();
 
-const mongoURI = process.env.MONGO_URI;
+const mongoURI = "mongodb://localhost:27017/";
 
 const connecToMongo = async () => {
      await mongoose.connect(mongoURI)
@@ -11,10 +11,5 @@ const connecToMongo = async () => {
         }).catch((err) => {
             console.log('no success', err);
         });
-
-
-
 }
-
-
 module.exports = connecToMongo

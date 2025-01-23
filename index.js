@@ -1,4 +1,4 @@
-const connecToMongo = require('./db');
+const connecToMongo = require('./ds');
 const express = require('express')
 const cors = require("cors");
 
@@ -14,15 +14,12 @@ app.get('/hi',(req,res)=>{
     res.send(req.body);
 })
 
-app.use('/course',require('./routes/learncourse'))
-;
-app.use('/bookmark',require('./routes/bookmark'));
+app.use('/showclasses',require('./routes/showclasses'));
+app.use('/classes',require('./routes/classes'));
+app.use('/class',require('./routes/class'));
 
-app.use('/lesson',require('./routes/lesson'));
-app.use('/notes',require('./routes/notes'));
-
-app.use('/help',require('./routes/help'));
+// app.use('/help',require('./routes/help'));
 
 app.listen(port,()=>{
-    console.log('in listen');
+    console.log(port);
 })
