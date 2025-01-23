@@ -17,9 +17,3 @@ app.get('/hi',(req,res)=>{
 app.use('/showclasses',require('./routes/showclasses'));
 app.use('/classes',require('./routes/classes'));
 app.use('/class',require('./routes/class'));
-
-// app.use('/help',require('./routes/help'));
-
-app.listen(port,()=>{
-    console.log(port);
-})
