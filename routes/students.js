@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Class = require('../models/Class');
+const Students = require('../models/Students');
 const { body, validationResult } = require('express-validator');
 
 router.get('/',
@@ -8,7 +8,7 @@ router.get('/',
         const errors = validationResult(req);
         if (errors.isEmpty()) {
             try {
-                const newStudent = await Class.create({
+                const newStudent = await Students.create({
                     slno: req.body.slno,
                     classid: req.body.classid,
                     name: req.body.name,

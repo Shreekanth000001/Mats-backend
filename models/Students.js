@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const classSchema = new Schema({
+const studentSchema = new Schema({
     slno: {
         type: Number,
         required: true,
@@ -27,6 +27,6 @@ const classSchema = new Schema({
     doi: { type: Date, default: Date.now },
 });
 
-const Class = mongoose.model('Class', classSchema,'class');
-Class.createIndexes();
-module.exports = Class;
+const Student = mongoose.model('Student', studentSchema);
+Student.createIndexes();
+module.exports = Student;

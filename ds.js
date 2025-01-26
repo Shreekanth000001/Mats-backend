@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const mongoURI = "mongodb://localhost:27017/";
 
 const connecToMongo = async () => {
-     await mongoose.connect(mongoURI)
+    await mongoose.connect(mongoURI)
         .then(() => {
             console.log('success');
         }).catch((err) => {
