@@ -26,6 +26,15 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    classmod: {
+        type: String,
+        required:true
+    },
+    approved: {
+        type: String,
+        enum: ["no","yes"],
+        default: "no"
+    },
     doj: { type: Date, default: Date.now },
 });
 
