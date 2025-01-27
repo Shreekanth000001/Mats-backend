@@ -26,9 +26,6 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    phoneno: {
-        type: String
-    },
     doj: { type: Date, default: Date.now },
 });
 
