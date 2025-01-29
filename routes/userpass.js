@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Userpass = require('./models/Userpass');
+const UserPass = require('../models/UserPass');
 const { validationResult } = require('express-validator');
 
 router.post('/',
@@ -8,11 +8,11 @@ router.post('/',
         const errors = validationResult(req);
         if (errors.isEmpty()) {
             try {
-                const newUserpass = await Userpass.create({
+                const newUserPass = await UserPass.create({
                     userid: req.body.userid,
                     password: req.body.password,
                 });
-                res.send(newUserpass);
+                res.send(newUserPass);
             } catch (error) {
                 res.status(500).send({ message: "An unexpected error occurred while storing the password." });
             }

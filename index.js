@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use('/showclasses', require('./routes/showclasses'));
+app.use('/', require('./routes/showclasses'));
 app.use('/classes', require('./routes/classes'));
 app.use('/students', require('./routes/students'));
 app.use('/attendance', require('./routes/attendance'));
