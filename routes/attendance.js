@@ -23,5 +23,13 @@ router.get('/',
             res.send({ errors: errors.array() });
         }
     })
+router.get('/getall', async (req, res) => {
+    try {
+        const attendance = await Attendance.find({});
+        res.status(200).json(attendance);
+    } catch (error) {
+        res.send(error);
+    }
+});
 
 module.exports = router;
