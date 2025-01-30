@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const Students = require('../models/Students');
 const Attendance = require('../models/Attendance');
+const Classes = require('../models/Classes');
 const { body, validationResult } = require('express-validator');
 
 router.get('/',
@@ -42,12 +43,14 @@ router.get('/attendance', async (req, res) => {
         const studentIds= req.query.studentid;
         const studentId= new mongoose.Types.ObjectId(studentIds);
         const student = await Students.findOne({ _id: studentId });
+        const classname = await Classes.findOne({ _id: student.classid });
         const attendance = await Attendance.find({
             students:  {$elemMatch:{ studentId: studentId}}});
 
             const filteredAttendance = attendance.map(record => ({
                 _id: record._id,
                 name:student.name,
+                classname:classname.name,
                 classId: record.classId,
                 date: record.date,
                 subject: record.subject,
