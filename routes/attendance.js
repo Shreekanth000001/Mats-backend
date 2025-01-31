@@ -3,7 +3,7 @@ const router = express.Router();
 const Attendance = require('../models/Attendance');
 const { body, validationResult } = require('express-validator');
 
-router.get('/',
+router.post('/',
     async (req, res) => {
         const errors = validationResult(req);
         if (errors.isEmpty()) {
