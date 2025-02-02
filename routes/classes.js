@@ -32,13 +32,15 @@ router.get("/attendance", async (req, res) => {
     try {
         const classId = req.query.classid;
         const classid = new mongoose.Types.ObjectId(classId);
+        const classname = await Classes.findOne({ _id: classid });
         const classes = await Attendance.find({ classId: classid });
 
-        const filteredClasses = classes.map(record => ({
-            subject: record.subject,
-        }));
+        const subjects = classes.map(record => record.subject);
 
-        res.status(200).json(filteredClasses);
+        res.status(200).json({
+            classname: classname.name, // Add classname to response
+            subjects: subjects // Now an array of strings
+        });
     } catch (error) {
         res.status(500).send({
             message: "An error occurred while getting attendance of classes", error: error.message,
