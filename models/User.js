@@ -2,17 +2,6 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    classid: {
-        type: Schema.Types.ObjectId,
-        ref: 'Classes',
-        required: true,
-        validate: {
-            validator: function (classId) {
-                return !!this.model('Classes').findById(classId);
-            },
-            message: props => `${props.value} is not a valid classId`
-        }
-    },
     name: {
         type: String,
         required: true
