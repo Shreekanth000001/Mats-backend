@@ -8,9 +8,9 @@ const jwt = require('jsonwebtoken');
 const JWS_SECRET = 'password';
 
 router.post('/',
-    body('name').notEmpty().isLength({ min: 5 }).withMessage('Name must be longer than 3 letters '),
+    body('name').notEmpty().isLength({ min: 5 }).withMessage(' Name must be longer than 3 letters '),
     body('email').isEmail().withMessage('Enter valid email '),
-    body('password').notEmpty().isLength({ min: 5 }).withMessage('Password must be atleast 6 letters long '),
+    body('password').notEmpty().isLength({ min: 5 }).withMessage(' Password must be atleast 6 letters long '),
     async (req, res) => {
         const errors = validationResult(req);
         if (errors.isEmpty()) {
@@ -20,7 +20,8 @@ router.post('/',
                 const newUser = await User.create({
                     name: req.body.name,
                     email: req.body.email,
-                    password: secPass
+                    password: secPass,
+                    classmod: req.body.classmod,
                 });
                 const data = {
                     user: {

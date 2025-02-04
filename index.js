@@ -16,6 +16,7 @@ app.use('/students', require('./routes/students'));
 app.use('/attendance', require('./routes/attendance'));
 app.use('/login', require('./routes/login'));
 app.use('/signup', require('./routes/signup'));
+app.use('/getuser', require('./routes/getuser'));
 app.use('/help', require('./routes/help'));
 app.use('/userpass', require('./routes/userpass'));
 
