@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Attendance = require('../models/Attendance');
+const Classes = require('../models/Classes');
 const { body, validationResult } = require('express-validator');
 
 router.post('/',
@@ -25,7 +26,9 @@ router.post('/',
     })
 router.get('/getall', async (req, res) => {
     try {
-        const attendance = await Attendance.find({});
+        const classes = await Classes.find({ approved: "yes" });
+        const classIds = classes.map(cls => cls._id);
+        const attendance = await Attendance.find({ classId: { $in: classIds } });
         res.status(200).json(attendance);
     } catch (error) {
         res.send(error);

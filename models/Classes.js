@@ -33,6 +33,11 @@ const classesSchema = new Schema({
     strength: {
         type: Number
     },
+    approved: {
+        type: String,
+        enum: ["no","yes"],
+        default: "no"
+    },
     doi: { type: Date, default: Date.now },
 });
 
