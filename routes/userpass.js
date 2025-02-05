@@ -14,6 +14,7 @@ router.post('/',
                 });
                 res.send(newUserPass);
             } catch (error) {
+                console.log(error);
                 res.status(500).send({ message: "An unexpected error occurred while storing the password." });
             }
         } else {

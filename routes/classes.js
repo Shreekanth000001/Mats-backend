@@ -51,4 +51,25 @@ router.get("/attendance", async (req, res) => {
     }
 });
 
+router.post('/delete', async (req, res) => {
+    try {
+        const { classId } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(classId)) {
+            return res.status(400).send({ message: "Invalid class ID format" });
+        }
+        const result = await Classes.findByIdAndDelete(classId);
+
+        if (!result) {
+            return res.status(404).send({ message: "class record not found" });
+        }
+        res.status(200).send({
+            message: "class deleted successfully"
+        });
+    } catch (error) {
+        console.error("Delete error:", error);
+        res.status(500).send({ message: "Error deleting class", error: error.message });
+    }
+});
+
 module.exports = router;
