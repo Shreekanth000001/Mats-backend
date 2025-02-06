@@ -4,9 +4,9 @@ const router = express.Router();
 const Students = require('../models/Students');
 const Attendance = require('../models/Attendance');
 const Classes = require('../models/Classes');
-const { body, validationResult } = require('express-validator');
+const {  validationResult } = require('express-validator');
 
-router.get('/',
+router.post('/',
     async (req, res) => {
         const errors = validationResult(req);
         if (errors.isEmpty()) {
@@ -14,8 +14,7 @@ router.get('/',
                 const newStudent = await Students.create({
                     slno: req.body.slno,
                     classid: req.body.classid,
-                    name: req.body.name,
-                    section: req.body.section
+                    name: req.body.name
                 });
                 console.log("Success in adding Student");
                 res.send(newStudent);
@@ -32,6 +31,14 @@ router.get('/class', async (req, res) => {
         const classIds= req.query.classid;
         const classId= new mongoose.Types.ObjectId(classIds);
         const students = await Students.find({classid : classId});
+        res.status(200).json(students);
+          } catch (error) {
+        res.status(500).send({ message: 'An error occurred while getting class students',error:error.message });
+      }
+    });
+router.get('/getall', async (req, res) => {
+    try {
+        const students = await Students.find({});
         res.status(200).json(students);
           } catch (error) {
         res.status(500).send({ message: 'An error occurred while getting students',error:error.message });
@@ -61,6 +68,26 @@ router.get('/attendance', async (req, res) => {
           } catch (error) {
         res.status(500).send({ message: 'An error occurred while getting attendance of student',error:error.message });
       }
+    });
+    router.post('/delete', async (req, res) => {
+        try {
+            const { studentId } = req.body;
+    
+            if (!mongoose.Types.ObjectId.isValid(studentId)) {
+                return res.status(400).send({ message: "Invalid student ID format" });
+            }
+            const result = await Students.findByIdAndDelete(studentId);
+    
+            if (!result) {
+                return res.status(404).send({ message: "student record not found" });
+            }
+            res.status(200).send({
+                message: "student deleted successfully"
+            });
+        } catch (error) {
+            console.error("Delete error:", error);
+            res.status(500).send({ message: "Error deleting student", error: error.message });
+        }
     });
 
 module.exports = router;

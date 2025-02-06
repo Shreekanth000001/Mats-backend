@@ -5,7 +5,6 @@ const studentSchema = new Schema({
     slno: {
         type: Number,
         required: true,
-        unique: true
     },
     classid: {
         type: Schema.Types.ObjectId,
@@ -19,9 +18,6 @@ const studentSchema = new Schema({
         }
     },
     name: {
-        type: String
-    },
-    section: {
         type: String
     },
     doi: { type: Date, default: Date.now },

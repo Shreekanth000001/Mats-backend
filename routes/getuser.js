@@ -74,7 +74,11 @@ router.post('/', fetchuser,
                 { approved: "yes" },
                 { new: true }
             );
-            
+            const classapprove = await Classes.findOneAndUpdate(
+                { userid: pendingUserId },
+                { approved: "yes" },
+                { new: true }
+            );
             if (!result) {
                 return res.status(404).send({ message: "user record not found" });
             }
@@ -96,17 +100,16 @@ router.post('/', fetchuser,
             const result = await User.findByIdAndDelete(pendingUserId);
             const classid = await Classes.deleteOne({ userid: pendingUserId});
             
-            if (!result) {
-                return res.status(404).send({ message: "user record not found" });
+            if (!result || !classid) {
+                return res.status(404).send({ message: "user or class record not found" });
             }
             res.status(200).send({
                 message: "user deleted successfully"
             });
         } catch (error) {
             console.error("Delete error:", error);
-            res.status(500).send({ message: "Error deleting user", error: error.message });
+            res.status(500).send({ message: "Error deleting user or class", error: error.message });
         }
     });
     
-
 module.exports = router;
