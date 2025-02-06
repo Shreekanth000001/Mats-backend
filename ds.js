@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 // require('.env').config();
 
-const mongoURI = "mongodb+srv://shreekanthk000001:shreekanthadmin1@matsdb.s22pl.mongodb.net/yourDatabaseName?retryWrites=true&w=majority";
+const mongoURI = process.env.MONGO_URI;
 
 
 const connecToMongo = async () => {
