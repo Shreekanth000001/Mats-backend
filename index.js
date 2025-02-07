@@ -20,10 +20,6 @@ app.use('/getuser', require('./routes/getuser'));
 app.use('/help', require('./routes/help'));
 app.use('/userpass', require('./routes/userpass'));
 
-app.get('/', (req, res) => {
-    res.send('MATS Backend is running!');
-});
-
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
