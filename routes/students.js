@@ -90,4 +90,23 @@ router.get('/attendance', async (req, res) => {
         }
     });
 
+    router.get('/name', async (req, res) => {
+        try {
+            const { name } = req.query;
+            let students;
+    
+            if (name) {
+                const regex = new RegExp(name, 'i');
+                students = await Students.find({ name: regex });
+            } else {
+                students = await Students.find({});
+            }
+    
+            res.status(200).json(students);
+        } catch (error) {
+            res.status(500).send({ message: 'An error occurred while getting students', error: error.message });
+        }
+    });
+    
+
 module.exports = router;
