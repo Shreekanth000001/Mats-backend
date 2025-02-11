@@ -6,63 +6,66 @@ const Attendance = require("../models/Attendance");
 const { body, validationResult } = require("express-validator");
 
 router.post("/", async (req, res) => {
-        const errors = validationResult(req);
+    const errors = validationResult(req);
 
-        if (errors.isEmpty()) {
-            try {
-                const newClass = await Classes.create({
-                    userid: req.body.userid,
-                    name: req.body.name,
-                    description: req.body.description,
-                    course: req.body.course,
-                    section: req.body.section,
-                    strength: req.body.strength,
-                    subjects: req.body.subjects || [],
-                });
-                console.log("Success in adding Class");
-                res.send(newClass);
-            } catch (error) {
-                res.status(500).send({
-                    message: "An unexpected error occurred while creating the Class.",
-                });
-            }
-        } else {
-            res.send({ errors: errors.array() });
-        }
-    });
-
-    router.get("/attendance", async (req, res) => {
+    if (errors.isEmpty()) {
         try {
-            const classId = req.query.classid;
-            const classid = new mongoose.Types.ObjectId(classId);
-            const classname = await Classes.findOne({ _id: classid });
-    
-            if (!classname) {
-                return res.status(404).json({ message: "Class not found" });
-            }
-    
-            const attendances = await Attendance.find({ classId: classid });
-    
-            // Flatten and count subjects
-            const subjectCounts = attendances.flatMap(record => record.subjects)
-                .reduce((acc, subject) => {
-                    acc[subject] = (acc[subject] || 0) + 1;
-                    return acc;
-                }, {});
-    
-            res.status(200).json({
-                classname: classname.name,
-                subjects: subjectCounts // Now an object with counts
+            const newClass = await Classes.create({
+                userid: req.body.userid,
+                name: req.body.name,
+                description: req.body.description,
+                course: req.body.course,
+                section: req.body.section,
+                strength: req.body.strength,
+                subjects: req.body.subjects || [],
             });
-    
+            console.log("Success in adding Class");
+            res.send(newClass);
         } catch (error) {
             res.status(500).send({
-                message: "An error occurred while getting attendance of classes",
-                error: error.message,
+                message: "An unexpected error occurred while creating the Class.",
             });
         }
-    });
-    
+    } else {
+        res.send({ errors: errors.array() });
+    }
+});
+
+router.get("/attendance", async (req, res) => {
+    try {
+        const classId = req.query.classid;
+        const classid = new mongoose.Types.ObjectId(classId);
+        const classname = await Classes.findOne({ _id: classid });
+
+        if (!classname) {
+            return res.status(404).json({ message: "Class not found" });
+        }
+
+        const attendances = await Attendance.find({ classId: classid });
+
+        const subjectCounts = {};
+
+        attendances.forEach(record => {
+            const uniqueSubjects = new Set(record.subjects); // Remove duplicates
+            uniqueSubjects.forEach(subject => {
+                subjectCounts[subject] = 1; // Ensure core subjects count as 1
+            });
+        });
+
+
+        res.status(200).json({
+            classname: classname.name,
+            subjects: subjectCounts // Now an object with counts
+        });
+
+    } catch (error) {
+        res.status(500).send({
+            message: "An error occurred while getting attendance of classes",
+            error: error.message,
+        });
+    }
+});
+
 
 router.post('/delete', async (req, res) => {
     try {
