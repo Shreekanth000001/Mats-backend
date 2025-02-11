@@ -46,12 +46,10 @@ router.get("/attendance", async (req, res) => {
         const subjectCounts = {};
 
         attendances.forEach(record => {
-            const uniqueSubjects = new Set(record.subjects); // Remove duplicates
-            uniqueSubjects.forEach(subject => {
-                subjectCounts[subject] = 1; // Ensure core subjects count as 1
+            record.subjects.forEach(subject => {
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1; // Sum across dates
             });
         });
-
 
         res.status(200).json({
             classname: classname.name,
