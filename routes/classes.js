@@ -43,40 +43,36 @@ router.get("/attendance", async (req, res) => {
 
         const attendances = await Attendance.find({ classId: classid });
 
-        console.log("Raw Attendance Records:", attendances);  // 🔍 Log records from DB
+        console.log("Raw Attendance Records:", attendances);  
 
         const subjectCounts = {};
-
-        // Step 1: Track how many times a subject appears each day
         const subjectsByDate = {};
 
         attendances.forEach(record => {
             const dateKey = record.date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
-
+            
             if (!subjectsByDate[dateKey]) {
-                subjectsByDate[dateKey] = {};
+                subjectsByDate[dateKey] = new Set(); // Using a Set to track unique subjects
             }
 
             record.subjects.forEach(subject => {
-                subjectsByDate[dateKey][subject] = (subjectsByDate[dateKey][subject] || 0) + 1;
+                subjectsByDate[dateKey].add(subject); // Ensure each subject is counted only once per day
             });
         });
 
         // Step 2: Aggregate across all dates
         for (let date in subjectsByDate) {
-            for (let subject in subjectsByDate[date]) {
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + subjectsByDate[date][subject];
-            }
+            subjectsByDate[date].forEach(subject => {
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1;
+            });
         }
 
         console.log("Final Aggregated Counts:", subjectCounts);
         
-
         res.status(200).json({
             classname: classname.name,
             subjects: subjectCounts
         });
-
 
     } catch (error) {
         console.error("Error fetching attendance:", error);
@@ -86,6 +82,7 @@ router.get("/attendance", async (req, res) => {
         });
     }
 });
+
 
 router.post('/delete', async (req, res) => {
     try {
