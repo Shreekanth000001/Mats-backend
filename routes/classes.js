@@ -36,13 +36,13 @@ router.get("/attendance", async (req, res) => {
         const classId = req.query.classid;
         const classid = new mongoose.Types.ObjectId(classId);
         const classname = await Classes.findOne({ _id: classid });
-        const classes = await Attendance.find({ classId: classid });
+        const attendances = await Attendance.find({ classId: classid });
 
-        const subjects = classes.map(record => record.subject);
+        const subjects = attendances.flatMap(record => record.subjects);
 
         res.status(200).json({
-            classname: classname.name, // Add classname to response
-            subjects: subjects // Now an array of strings
+            classname: classname.name,
+            subjects: subjects
         });
     } catch (error) {
         res.status(500).send({
