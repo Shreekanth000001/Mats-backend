@@ -13,7 +13,7 @@ router.post('/',
                 const newAttendance = await Attendance.create({
                     classId: req.body.classId,
                     date: req.body.date,
-                    subject: req.body.subject,
+                    subjects: req.body.subjects,
                     students: req.body.students
                 });
                 console.log("Success in adding Attendance");
