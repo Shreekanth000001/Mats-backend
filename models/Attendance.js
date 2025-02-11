@@ -11,8 +11,8 @@ const attendanceSchema = new Schema({
         type: Date,
         required: true,
     },
-    subject: {
-        type: String,
+    subjects: {
+        type: [String],
         required: true,
     },
     students: [
