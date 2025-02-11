@@ -31,25 +31,38 @@ router.post("/", async (req, res) => {
         }
     });
 
-router.get("/attendance", async (req, res) => {
-    try {
-        const classId = req.query.classid;
-        const classid = new mongoose.Types.ObjectId(classId);
-        const classname = await Classes.findOne({ _id: classid });
-        const attendances = await Attendance.find({ classId: classid });
-
-        const subjects = attendances.flatMap(record => record.subjects);
-
-        res.status(200).json({
-            classname: classname.name,
-            subjects: subjects
-        });
-    } catch (error) {
-        res.status(500).send({
-            message: "An error occurred while getting attendance of classes", error: error.message,
-        });
-    }
-});
+    router.get("/attendance", async (req, res) => {
+        try {
+            const classId = req.query.classid;
+            const classid = new mongoose.Types.ObjectId(classId);
+            const classname = await Classes.findOne({ _id: classid });
+    
+            if (!classname) {
+                return res.status(404).json({ message: "Class not found" });
+            }
+    
+            const attendances = await Attendance.find({ classId: classid });
+    
+            // Flatten and count subjects
+            const subjectCounts = attendances.flatMap(record => record.subjects)
+                .reduce((acc, subject) => {
+                    acc[subject] = (acc[subject] || 0) + 1;
+                    return acc;
+                }, {});
+    
+            res.status(200).json({
+                classname: classname.name,
+                subjects: subjectCounts // Now an object with counts
+            });
+    
+        } catch (error) {
+            res.status(500).send({
+                message: "An error occurred while getting attendance of classes",
+                error: error.message,
+            });
+        }
+    });
+    
 
 router.post('/delete', async (req, res) => {
     try {
