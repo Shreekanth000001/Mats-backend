@@ -70,6 +70,7 @@ router.get("/attendance", async (req, res) => {
         }
 
         console.log("Final Aggregated Counts:", subjectCounts);
+        
 
         res.status(200).json({
             classname: classname.name,
