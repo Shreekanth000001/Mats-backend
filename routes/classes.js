@@ -43,7 +43,7 @@ router.get("/attendance", async (req, res) => {
 
         const attendances = await Attendance.find({ classId: classid });
 
-        console.log("Raw Attendance Records:", attendances);  
+        console.log("Raw Attendance Records:", attendances);  // 🔍 Log records from DB
 
         const subjectCounts = {};
         const subjectsByDate = {};
@@ -52,23 +52,24 @@ router.get("/attendance", async (req, res) => {
             const dateKey = record.date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
             
             if (!subjectsByDate[dateKey]) {
-                subjectsByDate[dateKey] = {};
+                subjectsByDate[dateKey] = new Set();  // Use Set to avoid duplicate subjects
             }
 
+            // Add subjects to Set (removes duplicates)
             record.subjects.forEach(subject => {
-                subjectsByDate[dateKey][subject] = (subjectsByDate[dateKey][subject] || 0) + 1;
+                subjectsByDate[dateKey].add(subject);
             });
         });
 
         // Step 2: Aggregate across all dates
         for (let date in subjectsByDate) {
-            for (let subject in subjectsByDate[date]) {
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + subjectsByDate[date][subject];
-            }
+            subjectsByDate[date].forEach(subject => {
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1;
+            });
         }
 
         console.log("Final Aggregated Counts:", subjectCounts);
-        
+
         res.status(200).json({
             classname: classname.name,
             subjects: subjectCounts
