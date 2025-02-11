@@ -47,25 +47,35 @@ router.get("/attendance", async (req, res) => {
 
         const subjectCounts = {};
 
-        attendances.forEach(record => {
-            console.log(`Processing record: ${record._id}, Subjects:`, record.subjects); // 🔍 Log each record
+        // Step 1: Track how many times a subject appears each day
+        const subjectsByDate = {};
 
-            if (!Array.isArray(record.subjects)) {
-                console.error(`Invalid subject format in record ${record._id}`);
-                return;
+        attendances.forEach(record => {
+            const dateKey = record.date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
+
+            if (!subjectsByDate[dateKey]) {
+                subjectsByDate[dateKey] = {};
             }
 
             record.subjects.forEach(subject => {
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1;
+                subjectsByDate[dateKey][subject] = (subjectsByDate[dateKey][subject] || 0) + 1;
             });
         });
 
-        console.log("Final Aggregated Counts:", subjectCounts);  // 🔍 Log final count
+        // Step 2: Aggregate across all dates
+        for (let date in subjectsByDate) {
+            for (let subject in subjectsByDate[date]) {
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + subjectsByDate[date][subject];
+            }
+        }
+
+        console.log("Final Aggregated Counts:", subjectCounts);
 
         res.status(200).json({
             classname: classname.name,
             subjects: subjectCounts
         });
+
 
     } catch (error) {
         console.error("Error fetching attendance:", error);
