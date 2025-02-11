@@ -43,27 +43,38 @@ router.get("/attendance", async (req, res) => {
 
         const attendances = await Attendance.find({ classId: classid });
 
+        console.log("Raw Attendance Records:", attendances);  // 🔍 Log records from DB
+
         const subjectCounts = {};
 
         attendances.forEach(record => {
+            console.log(`Processing record: ${record._id}, Subjects:`, record.subjects); // 🔍 Log each record
+
+            if (!Array.isArray(record.subjects)) {
+                console.error(`Invalid subject format in record ${record._id}`);
+                return;
+            }
+
             record.subjects.forEach(subject => {
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1; // Sum across dates
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1;
             });
         });
 
+        console.log("Final Aggregated Counts:", subjectCounts);  // 🔍 Log final count
+
         res.status(200).json({
             classname: classname.name,
-            subjects: subjectCounts // Now an object with counts
+            subjects: subjectCounts
         });
 
     } catch (error) {
+        console.error("Error fetching attendance:", error);
         res.status(500).send({
             message: "An error occurred while getting attendance of classes",
             error: error.message,
         });
     }
 });
-
 
 router.post('/delete', async (req, res) => {
     try {
