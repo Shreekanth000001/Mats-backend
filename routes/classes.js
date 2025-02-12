@@ -38,11 +38,9 @@ router.get("/attendance", async (req, res) => {
         const classname = await Classes.findOne({ _id: classid });
         const attendances = await Attendance.find({ classId: classid });
 
-        const subjects = attendances.flatMap(record => record.subjects);
-
         res.status(200).json({
             classname: classname.name,
-            subjects: subjects
+            attendances: attendances
         });
     } catch (error) {
         res.status(500).send({
