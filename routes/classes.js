@@ -43,35 +43,37 @@ router.get("/attendance", async (req, res) => {
 
         const attendances = await Attendance.find({ classId: classid });
 
-        console.log("Raw Attendance Records:", attendances);  // 🔍 Log records from DB
-
         const subjectCounts = {};
         const subjectsByDate = {};
 
         attendances.forEach(record => {
-            const dateKey = record.date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
-            
+            const dateKey = record.date.toISOString().split("T")[0];
+
             if (!subjectsByDate[dateKey]) {
-                subjectsByDate[dateKey] = new Set(); // ✅ Unique subjects per date
+                subjectsByDate[dateKey] = {};
             }
 
-            const subjectOccurrence = {}; // ✅ Count how many times a subject appears in this single record
+            const subjectOccurrence = {};
 
             record.subjects.forEach(subject => {
                 subjectOccurrence[subject] = (subjectOccurrence[subject] || 0) + 1;
             });
 
-            // ✅ Add occurrences while ensuring no duplicates across records on the same date
             for (let subject in subjectOccurrence) {
-                subjectsByDate[dateKey].add({ subject, count: subjectOccurrence[subject] });
+                let count = subjectOccurrence[subject];
+
+                if (count > 1) {
+                    subjectsByDate[dateKey][subject] = (subjectsByDate[dateKey][subject] || 0) + count;
+                } else {
+                    subjectsByDate[dateKey][subject] = (subjectsByDate[dateKey][subject] || 0) + 1;
+                }
             }
         });
 
-        // Step 2: Aggregate across all dates correctly
         for (let date in subjectsByDate) {
-            subjectsByDate[date].forEach(({ subject, count }) => {
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + count;
-            });
+            for (let subject in subjectsByDate[date]) {
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + subjectsByDate[date][subject];
+            }
         }
 
         console.log("Final Aggregated Counts:", subjectCounts);
@@ -89,6 +91,7 @@ router.get("/attendance", async (req, res) => {
         });
     }
 });
+
 
 router.post('/delete', async (req, res) => {
     try {
