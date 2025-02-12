@@ -50,21 +50,24 @@ router.get("/attendance", async (req, res) => {
             const dateKey = record.date.toISOString().split("T")[0];
 
             if (!subjectsByDate[dateKey]) {
-                subjectsByDate[dateKey] = new Set(); // Use a Set to track unique subjects for the date
+                subjectsByDate[dateKey] = {};
             }
 
-            // Add all subjects for this record to the Set for the date
+            // Track occurrences of each subject for the date
             record.subjects.forEach(subject => {
-                subjectsByDate[dateKey].add(subject);
+                if (!subjectsByDate[dateKey][subject]) {
+                    subjectsByDate[dateKey][subject] = 1;
+                } else {
+                    subjectsByDate[dateKey][subject] += 1;
+                }
             });
         });
 
         // Aggregate counts across all dates
         for (let date in subjectsByDate) {
-            // Convert the Set to an array and iterate
-            Array.from(subjectsByDate[date]).forEach(subject => {
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1;
-            });
+            for (let subject in subjectsByDate[date]) {
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + subjectsByDate[date][subject];
+            }
         }
 
         console.log("Final Aggregated Counts:", subjectCounts);
