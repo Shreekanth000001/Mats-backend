@@ -52,20 +52,27 @@ router.get("/attendance", async (req, res) => {
             const dateKey = record.date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
             
             if (!subjectsByDate[dateKey]) {
-                subjectsByDate[dateKey] = new Set();  // Use Set to avoid duplicate subjects
+                subjectsByDate[dateKey] = {}; // Object to store subject count per day
             }
 
-            // Add subjects to Set (removes duplicates)
+            const subjectFrequency = {}; // ✅ Track how often each subject appears in this record
+
             record.subjects.forEach(subject => {
-                subjectsByDate[dateKey].add(subject);
+                subjectFrequency[subject] = (subjectFrequency[subject] || 0) + 1;
             });
+
+            // ✅ Add each subject's count properly
+            for (let subject in subjectFrequency) {
+                subjectsByDate[dateKey][subject] = 
+                    (subjectsByDate[dateKey][subject] || 0) + subjectFrequency[subject];
+            }
         });
 
-        // Step 2: Aggregate across all dates
+        // Step 2: Aggregate across all dates correctly
         for (let date in subjectsByDate) {
-            subjectsByDate[date].forEach(subject => {
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1;
-            });
+            for (let subject in subjectsByDate[date]) {
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + subjectsByDate[date][subject];
+            }
         }
 
         console.log("Final Aggregated Counts:", subjectCounts);
@@ -83,7 +90,6 @@ router.get("/attendance", async (req, res) => {
         });
     }
 });
-
 
 router.post('/delete', async (req, res) => {
     try {
