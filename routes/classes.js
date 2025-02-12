@@ -36,50 +36,17 @@ router.get("/attendance", async (req, res) => {
         const classId = req.query.classid;
         const classid = new mongoose.Types.ObjectId(classId);
         const classname = await Classes.findOne({ _id: classid });
-
-        if (!classname) {
-            return res.status(404).json({ message: "Class not found" });
-        }
-
-        // Fetch all attendance records for the class
         const attendances = await Attendance.find({ classId: classid });
 
-        // Step 1: Group records by date, keeping only the first record's subjects for each date
-        const subjectsByDate = {};
-
-        attendances.forEach(record => {
-            const dateKey = record.date.toISOString().split("T")[0];
-
-            // Store the first record's subjects for each date
-            if (!subjectsByDate[dateKey]) {
-                subjectsByDate[dateKey] = record.subjects;
-            }
-        });
-
-        // Step 2: Count occurrences of each subject across all dates
-        const subjectCounts = {};
-
-        for (const date in subjectsByDate) {
-            const subjectsForDate = subjectsByDate[date];
-
-            // Count occurrences within the first record's subjects array
-            subjectsForDate.forEach(subject => {
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1;
-            });
-        }
-
-        console.log("Final Aggregated Counts:", subjectCounts);
+        const subjects = attendances.flatMap(record => record.subjects);
 
         res.status(200).json({
             classname: classname.name,
-            subjects: subjectCounts
+            subjects: subjects
         });
-
     } catch (error) {
-        console.error("Error fetching attendance:", error);
         res.status(500).send({
-            message: "An error occurred while getting attendance of classes",
-            error: error.message,
+            message: "An error occurred while getting attendance of classes", error: error.message,
         });
     }
 });
