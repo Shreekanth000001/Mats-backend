@@ -52,27 +52,26 @@ router.get("/attendance", async (req, res) => {
             const dateKey = record.date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
             
             if (!subjectsByDate[dateKey]) {
-                subjectsByDate[dateKey] = {}; // Object to store subject count per day
+                subjectsByDate[dateKey] = new Set(); // ✅ Unique subjects per date
             }
 
-            const subjectFrequency = {}; // ✅ Track how often each subject appears in this record
+            const subjectOccurrence = {}; // ✅ Count how many times a subject appears in this single record
 
             record.subjects.forEach(subject => {
-                subjectFrequency[subject] = (subjectFrequency[subject] || 0) + 1;
+                subjectOccurrence[subject] = (subjectOccurrence[subject] || 0) + 1;
             });
 
-            // ✅ Add each subject's count properly
-            for (let subject in subjectFrequency) {
-                subjectsByDate[dateKey][subject] = 
-                    (subjectsByDate[dateKey][subject] || 0) + subjectFrequency[subject];
+            // ✅ Add occurrences while ensuring no duplicates across records on the same date
+            for (let subject in subjectOccurrence) {
+                subjectsByDate[dateKey].add({ subject, count: subjectOccurrence[subject] });
             }
         });
 
         // Step 2: Aggregate across all dates correctly
         for (let date in subjectsByDate) {
-            for (let subject in subjectsByDate[date]) {
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + subjectsByDate[date][subject];
-            }
+            subjectsByDate[date].forEach(({ subject, count }) => {
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + count;
+            });
         }
 
         console.log("Final Aggregated Counts:", subjectCounts);
