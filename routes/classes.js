@@ -41,33 +41,31 @@ router.get("/attendance", async (req, res) => {
             return res.status(404).json({ message: "Class not found" });
         }
 
+        // Fetch all attendance records for the class
         const attendances = await Attendance.find({ classId: classid });
 
-        const subjectCounts = {};
+        // Step 1: Group records by date, keeping only the first record's subjects for each date
         const subjectsByDate = {};
 
         attendances.forEach(record => {
             const dateKey = record.date.toISOString().split("T")[0];
 
+            // Store the first record's subjects for each date
             if (!subjectsByDate[dateKey]) {
-                subjectsByDate[dateKey] = {};
+                subjectsByDate[dateKey] = record.subjects;
             }
-
-            // Track occurrences of each subject for the date
-            record.subjects.forEach(subject => {
-                if (!subjectsByDate[dateKey][subject]) {
-                    subjectsByDate[dateKey][subject] = 1;
-                } else {
-                    subjectsByDate[dateKey][subject] += 1;
-                }
-            });
         });
 
-        // Aggregate counts across all dates
-        for (let date in subjectsByDate) {
-            for (let subject in subjectsByDate[date]) {
-                subjectCounts[subject] = (subjectCounts[subject] || 0) + subjectsByDate[date][subject];
-            }
+        // Step 2: Count occurrences of each subject across all dates
+        const subjectCounts = {};
+
+        for (const date in subjectsByDate) {
+            const subjectsForDate = subjectsByDate[date];
+
+            // Count occurrences within the first record's subjects array
+            subjectsForDate.forEach(subject => {
+                subjectCounts[subject] = (subjectCounts[subject] || 0) + 1;
+            });
         }
 
         console.log("Final Aggregated Counts:", subjectCounts);
@@ -85,7 +83,6 @@ router.get("/attendance", async (req, res) => {
         });
     }
 });
-
 
 router.post('/delete', async (req, res) => {
     try {
