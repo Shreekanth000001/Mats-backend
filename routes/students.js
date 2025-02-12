@@ -60,7 +60,7 @@ router.get('/attendance', async (req, res) => {
                 classname:classname.name,
                 classId: record.classId,
                 date: record.date,
-                subject: record.subject,
+                subjects: record.subjects,
                 student: record.students.find(student => student.studentId.equals(studentId)) // Filter out only this student
             }));
 
